@@ -16,31 +16,31 @@
 #
 # HTTP POST payload data is now in *Post
 (de postImage (Nm)
-   (out 2 (println Nm))
-   (out 2 (println *Post))
+   # (out 2 (println Nm))
+   # (out 2 (println *Post))
    (with (db 'nm '+User Nm)
       (put!> This 'img T)
-      ### get the post data here
+      # get the post data here
       (let Url (cdr (assoc "image" (json~decode *Post)))
-         ### any post-processing goes here
+         # any post-processing goes here
          (finally (resizeImage (blob This 'img) "200x200")
             (pipe
-               ### send to base64 utility to decode
+               # send to base64 utility to decode
                (out '(base64 "-d") 
-                  ## remove "data:image/<type>;base64," from URL
+                  # remove "data:image/<type>;base64," from URL
                   (prin (pack (stem (chop Url) ",") ) ) )
-               ### write decoded image to db blob file
+               # write decoded image to db blob file
                (out (blob This 'img)
                   (echo) ) ) ) )
-      ### json response goes here
+      # json response goes here
       (respondJson '((ok . "it worked"))) ) )
 
-### this function is not necessary. the 'base64' command line utility 
-### is able to decode even without the proper padding. however it will 
-### print "base64: invalid input" to stderr, thus cluttering your log
-### file in a PL application using httpGate.
+# this function is not necessary. the 'base64' command line utility 
+# is able to decode even without the proper padding. however it will 
+# print "base64: invalid input" to stderr, thus cluttering your log
+# file in a PL application using httpGate.
 (de padBase64Str (Str)
-   ## add necessary padding
+   # add necessary padding
    (case (% (length Str) 3)
       (1 (pack (append Str '(= =))))
       (2 (pack (append Str '(=))))
